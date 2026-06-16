@@ -1,0 +1,427 @@
+{
+  "info": {
+    "name": "Mangia RMS API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000/api/v1" },
+    { "key": "customer_token", "value": "" },
+    { "key": "admin_token", "value": "" },
+    { "key": "category_id", "value": "" },
+    { "key": "menu_item_id", "value": "" },
+    { "key": "table_id", "value": "" },
+    { "key": "order_id", "value": "" },
+    { "key": "reservation_id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register (customer)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Customer\",\n  \"email\": \"jane@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Register (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login (customer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.token) {",
+                  "  pm.collectionVariables.set('customer_token', json.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"jane@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login (admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.token) {",
+                  "  pm.collectionVariables.set('admin_token', json.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customer_token}}" }],
+            "url": "{{base_url}}/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Create category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "  pm.collectionVariables.set('category_id', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/categories",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Starters\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get all categories",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/categories"
+          }
+        },
+        {
+          "name": "Get single category",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/categories/{{category_id}}"
+          }
+        },
+        {
+          "name": "Update category",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/categories/{{category_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Appetizers\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Menu Items",
+      "item": [
+        {
+          "name": "Create menu item",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "  pm.collectionVariables.set('menu_item_id', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/menu-items",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bruschetta\",\n  \"description\": \"Toasted bread with tomatoes\",\n  \"price\": 8.50,\n  \"imageUrl\": \"https://example.com/bruschetta.jpg\",\n  \"available\": true,\n  \"categoryId\": \"{{category_id}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get all menu items",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/menu-items"
+          }
+        },
+        {
+          "name": "Get single menu item",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/menu-items/{{menu_item_id}}"
+          }
+        },
+        {
+          "name": "Update menu item",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/menu-items/{{menu_item_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bruschetta\",\n  \"description\": \"Toasted bread with tomatoes and basil\",\n  \"price\": 9.00,\n  \"imageUrl\": \"https://example.com/bruschetta.jpg\",\n  \"available\": true\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tables",
+      "item": [
+        {
+          "name": "Create table",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "  pm.collectionVariables.set('table_id', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/tables",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tableNumber\": 2,\n  \"capacity\": 4\n}"
+            }
+          }
+        },
+        {
+          "name": "Get all tables",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/tables"
+          }
+        },
+        {
+          "name": "Get single table",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/tables/{{table_id}}"
+          }
+        },
+        {
+          "name": "Update table",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/tables/{{table_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tableNumber\": 2,\n  \"capacity\": 6\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Place order (customer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "  pm.collectionVariables.set('order_id', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ],
+            "url": "{{base_url}}/orders",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    { \"menuItemId\": \"{{menu_item_id}}\", \"quantity\": 2 }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Get my orders (customer)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customer_token}}" }],
+            "url": "{{base_url}}/orders/my"
+          }
+        },
+        {
+          "name": "Get all orders (admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/orders"
+          }
+        },
+        {
+          "name": "Update order status (admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": "{{base_url}}/orders/{{order_id}}/status",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"CONFIRMED\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reservations",
+      "item": [
+        {
+          "name": "Submit reservation (customer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "  pm.collectionVariables.set('reservation_id', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" }
+            ],
+            "url": "{{base_url}}/reservations",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tableId\": \"{{table_id}}\",\n  \"reservationDate\": \"2026-07-01T19:00:00.000Z\",\n  \"guestCount\": 3\n}"
+            }
+          }
+        },
+        {
+          "name": "Get my reservations (customer)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customer_token}}" }],
+            "url": "{{base_url}}/reservations/my"
+          }
+        },
+        {
+          "name": "Get all reservations (admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/reservations"
+          }
+        },
+        {
+          "name": "Update reservation status (admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": "{{base_url}}/reservations/{{reservation_id}}/status",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"APPROVED\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cleanup",
+      "item": [
+        {
+          "name": "Delete menu item",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/menu-items/{{menu_item_id}}"
+          }
+        },
+        {
+          "name": "Delete category",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/categories/{{category_id}}"
+          }
+        },
+        {
+          "name": "Delete table",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/tables/{{table_id}}"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Mangia",
+  "description": "An elegant, comprehensive restaurant management platform for Mangia with menu browsing, table booking, and an administrative control panel.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
